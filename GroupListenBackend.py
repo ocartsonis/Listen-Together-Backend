@@ -11,6 +11,8 @@ TOKEN_INFO = 'token_info'
 
 @app.route('/')
 def login():
+    print(request.remote_addr)
+    print("Here")
     auth_url = create_spotify_oauth().get_authorize_url()
     return redirect(auth_url)
 
@@ -29,7 +31,7 @@ def listen_together():
     except:
         print("not logged in")
         return redirect('/')
-    return("oath successful")
+    print(request.remote_addr)
 
 def get_token():
     token_info = session.get(TOKEN_INFO, None)
