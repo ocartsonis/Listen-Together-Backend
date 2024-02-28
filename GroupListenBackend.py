@@ -48,5 +48,5 @@ def create_spotify_oauth():
                         client_secret = '6c9ce3e8fcca4050921b4b69937586f6',
                         redirect_uri = url_for('redirect_page', _external = True),
                         scope = 'playlist-modify-private playlist-modify-public user-modify-playback-state user-read-playback-state user-read-currently-playing')
-
-app.run()
+if __name__ == '__main__':
+    app.run()
