@@ -5,8 +5,8 @@ from flask import Flask, request, url_for, session, redirect
 
 app = Flask(__name__)
 
-app.config['SESSION_COOKIE_NAME'] = 'Spotify Cookie'
-app.secret_key = 'sydut126776t3&!@78dfsa^!'
+#app.config['SESSION_COOKIE_NAME'] = 'Spotify Cookie'
+#app.secret_key = 'sydut126776t3&!@78dfsa^!'
 TOKEN_INFO = 'token_info'
 
 @app.route('/')
