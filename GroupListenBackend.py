@@ -39,7 +39,7 @@ def listen_together():
     except:
         print("not logged in")
         return redirect('/')
-    return("oath successful")
+    print(request.remote_addr)
 
 def get_token():
     token_info = session.get(TOKEN_INFO, None)
