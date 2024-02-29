@@ -8,11 +8,21 @@ app = Flask(__name__)
 app.config['SESSION_COOKIE_NAME'] = 'Spotify Cookie'
 app.secret_key = 'sydut126776t3&!@78dfsa^!'
 TOKEN_INFO = 'token_info'
+secret_code = ''
 
 @app.route('/')
 def login():
+    print(secret_code)
     auth_url = create_spotify_oauth().get_authorize_url()
     return redirect(auth_url)
+
+@app.route('/user/<secret>')
+def get_secret_code(secret):
+    global secret_code
+    secret_code = secret
+
+    # This function will be called when someone visits /user/<username>
+    return redirect('/')
 
 @app.route('/redirect')
 def redirect_page():
