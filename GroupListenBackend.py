@@ -2,6 +2,7 @@ import time
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 from flask import Flask, request, url_for, session, redirect
+import psycopg2
 
 app = Flask(__name__)
 
@@ -39,7 +40,12 @@ def listen_together():
     except:
         print("not logged in")
         return redirect('/')
-    print(request.remote_addr)
+   # conn = psycopg2.connect(
+   # dbname="your_database_name",
+   # user="your_username",
+   # password="your_password",
+   # host="your_host",
+   # port="your_port")
 
 def get_token():
     token_info = session.get(TOKEN_INFO, None)
