@@ -3,6 +3,7 @@ import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 from flask import Flask, request, url_for, session, redirect
 import psycopg2
+from psycopg2.extras import Json
 
 app = Flask(__name__)
 
@@ -36,16 +37,25 @@ def redirect_page():
 @app.route('/listenTogether')
 def listen_together():
     try:
-        token_info = get_token()
+        token = get_token()
     except:
         print("not logged in")
         return redirect('/')
-   # conn = psycopg2.connect(
-   # dbname="your_database_name",
-   # user="your_username",
-   # password="your_password",
-   # host="your_host",
-   # port="your_port")
+    conn = psycopg2.connect('postgres://spotify_listen_data_user:tKsP5Ic7JJOEvB9Xv6ePnLorFvNoD40G@dpg-cneg0qmct0pc738505dg-a.oregon-postgres.render.com/spotify_listen_data')
+    cursor = conn.cursor()
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        secret_code VARCHAR(100) UNIQUE NOT NULL,
+        token JSONB NOT NULL
+    )
+    """)
+    print(token)
+    cursor.execute("INSERT INTO users (secret_code, token) VALUES (%s, %s)", (secret_code, psycopg2.extras.Json(token)))
+
+    conn.commit()
+    cursor.close()
+    conn.close()
     return("balls")
 
 def get_token():
