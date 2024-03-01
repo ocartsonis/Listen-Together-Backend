@@ -46,6 +46,7 @@ def listen_together():
    # password="your_password",
    # host="your_host",
    # port="your_port")
+    return("balls")
 
 def get_token():
     token_info = session.get(TOKEN_INFO, None)
