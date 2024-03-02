@@ -50,10 +50,19 @@ def listen_together():
         token JSONB NOT NULL
     )
     """)
-    print(token)
+
     cursor.execute("INSERT INTO tokens (secret_code, token) VALUES (%s, %s)", (secret_code, psycopg2.extras.Json(token)))
-    
     conn.commit()
+    
+    cursor.execute("SELECT * FROM your_table_name")
+
+    # Fetch all rows from the result set
+    rows = cursor.fetchall()
+
+    # Print the rows
+    for row in rows:
+        print(row)
+
     cursor.close()
     conn.close()
     return("balls")
