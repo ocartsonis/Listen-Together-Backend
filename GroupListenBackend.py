@@ -44,15 +44,15 @@ def listen_together():
     conn = psycopg2.connect('postgres://spotify_listen_data_user:tKsP5Ic7JJOEvB9Xv6ePnLorFvNoD40G@dpg-cneg0qmct0pc738505dg-a.oregon-postgres.render.com/spotify_listen_data')
     cursor = conn.cursor()
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS users (
+    CREATE TABLE IF NOT EXISTS tokens (
         id SERIAL PRIMARY KEY,
         secret_code VARCHAR(100) UNIQUE NOT NULL,
         token JSONB NOT NULL
     )
     """)
     print(token)
-    cursor.execute("INSERT INTO users (secret_code, token) VALUES (%s, %s)", (secret_code, psycopg2.extras.Json(token)))
-
+    cursor.execute("INSERT INTO tokens (secret_code, token) VALUES (%s, %s)", (secret_code, psycopg2.extras.Json(token)))
+    
     conn.commit()
     cursor.close()
     conn.close()
