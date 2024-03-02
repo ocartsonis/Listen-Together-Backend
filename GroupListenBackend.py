@@ -50,8 +50,10 @@ def listen_together():
         token JSONB NOT NULL
     )
     """)
-
-    cursor.execute("INSERT INTO tokens (secret_code, token) VALUES (%s, %s)", (secret_code, psycopg2.extras.Json(token)))
+    try:
+        cursor.execute("INSERT INTO tokens (secret_code, token) VALUES (%s, %s)", (secret_code, psycopg2.extras.Json(token)))
+    except:
+        print("sucks")
     conn.commit()
 
     cursor.execute("SELECT * FROM tokens")
