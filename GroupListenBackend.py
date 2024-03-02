@@ -53,8 +53,8 @@ def listen_together():
 
     cursor.execute("INSERT INTO tokens (secret_code, token) VALUES (%s, %s)", (secret_code, psycopg2.extras.Json(token)))
     conn.commit()
-    
-    cursor.execute("SELECT * FROM your_table_name")
+
+    cursor.execute("SELECT * FROM tokens")
 
     # Fetch all rows from the result set
     rows = cursor.fetchall()
