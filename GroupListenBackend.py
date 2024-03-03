@@ -4,6 +4,7 @@ from spotipy.oauth2 import SpotifyOAuth
 from flask import Flask, request, url_for, session, redirect
 import psycopg2
 from psycopg2.extras import Json
+import SessionClass as sc, ListenerClass as lc
 
 app = Flask(__name__)
 
@@ -11,6 +12,7 @@ app.config['SESSION_COOKIE_NAME'] = 'Spotify Cookie'
 app.secret_key = 'sydut126776t3&!@78dfsa^!'
 TOKEN_INFO = 'token_info'
 secret_code = ''
+group_session: sc.Session
 
 @app.route('/')
 def login():
@@ -25,6 +27,13 @@ def get_secret_code(secret):
 
     # This function will be called when someone visits /user/<username>
     return redirect('/')
+
+@app.route('/hostSession/<session_name>')
+def create_session(session_name):
+    global group_session
+    group_session = sc.Session(session_name)
+
+    return("easy clap")
 
 @app.route('/redirect')
 def redirect_page():
@@ -50,10 +59,12 @@ def listen_together():
         token JSONB NOT NULL
     )
     """)
-    try:
-        cursor.execute("INSERT INTO tokens (secret_code, token) VALUES (%s, %s)", (secret_code, psycopg2.extras.Json(token)))
-    except:
-        print("sucks")
+    if(secret_code != ''):
+        try:
+            cursor.execute("INSERT INTO tokens (secret_code, token) VALUES (%s, %s)", (secret_code, psycopg2.extras.Json(token)))
+        except Exception as e:
+            print("Exception: ", e)
+
     conn.commit()
 
     cursor.execute("SELECT * FROM tokens")
@@ -67,7 +78,10 @@ def listen_together():
 
     cursor.close()
     conn.close()
-    return("balls")
+
+    listener_test = lc.Listener(token)
+
+    return(listener_test.getName())
 
 def get_token():
     token_info = session.get(TOKEN_INFO, None)
@@ -76,7 +90,7 @@ def get_token():
     now = int(time.time())
     is_expired = token_info['expires_at'] - now < 60
     if(is_expired):
-        spotify_oauth = create_spotify_oauth
+        spotify_oauth = create_spotify_oauth()
         token_info = spotify_oauth.refresh_access_token(token_info['refesh_token'])
     return token_info
 
