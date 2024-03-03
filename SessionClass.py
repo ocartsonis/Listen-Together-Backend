@@ -17,15 +17,20 @@ class Session:
 
     def createPlaylist(self):
         for listener in self.listeners:
+            hasPlaylist = False
             sp = spotipy.Spotify(auth=listener.getAccess())
-            sp.user_playlist_create(name=self.name, public=False, user=listener.getID())
+            for playlist in sp.current_user_playlists()['items']:
+                if playlist['name'] == self.name:
+                    hasPlaylist = True
+            if hasPlaylist == False:
+                sp.user_playlist_create(name=self.name, public=False, user=listener.getID())
 
     def syncPlaylist(self):
         for listener in self.listeners:
             sp = spotipy.Spotify(auth=listener.getAccess())
             current_playlists = sp.current_user_playlists()['items']
             for playlist in current_playlists:
-                if(playlist['name'] == self.name):
+                if playlist['name'] == self.name:
                     #make this a list that is added to or subtracted from
                     listener_tracks = sp.playlist_items(playlist_id=playlist['id'])
                     listener_track_uris = []
@@ -42,9 +47,11 @@ class Session:
         for differences in self.total_track_differences:
             for uri, change_type in differences:
                 if change_type == "removed":
-                    self.track_uris.remove(uri)
+                    if uri in self.track_uris:
+                        self.track_uris.remove(uri)
                 if change_type == "added":
-                    self.track_uris.append(uri)
+                    if uri not in self.track_uris:
+                        self.track_uris.append(uri)
 
     def getListeners(self):
         return self.listeners

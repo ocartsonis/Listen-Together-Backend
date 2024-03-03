@@ -28,12 +28,38 @@ def get_secret_code(secret):
     # This function will be called when someone visits /user/<username>
     return redirect('/')
 
-@app.route('/hostSession/<session_name>')
-def create_session(session_name):
+@app.route('/hostSession/<session_name>/<secret>')
+def create_session(session_name, secret):
     global group_session
+    global secret_code
+    secret_code = secret
     group_session = sc.Session(session_name)
 
-    return("easy clap")
+    conn = psycopg2.connect('postgres://spotify_listen_data_user:tKsP5Ic7JJOEvB9Xv6ePnLorFvNoD40G@dpg-cneg0qmct0pc738505dg-a.oregon-postgres.render.com/spotify_listen_data')
+    cursor = conn.cursor()
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS sessions (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(100) UNIQUE NOT NULL,
+        session JSONB NOT NULL
+    )
+    """)
+    cursor.execute("SELECT * FROM tokens")
+
+    rows = cursor.fetchall()
+    for row in rows:
+        if row[1] == secret_code:
+            group_session.addListener(row[2])
+
+    return redirect('/sessionLoop')
+
+@app.route('/sessionLoop')
+def run_session():
+    global group_session
+    group_session.createPlaylist()
+    group_session.syncPlaylist()
+
+    return redirect('/sessionLoop')
 
 @app.route('/redirect')
 def redirect_page():
@@ -74,7 +100,8 @@ def listen_together():
 
     # Print the rows
     for row in rows:
-        print(row)
+        if row[1] == '':
+            print(row[2])
 
     cursor.close()
     conn.close()
