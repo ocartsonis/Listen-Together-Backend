@@ -17,17 +17,18 @@ class Session:
 
     def createPlaylist(self):
         for listener in self.listeners:
-            hasPlaylist = False
+            has_playlist = False
             print(type(listener))
             sp = spotipy.Spotify(auth=listener.getAccess())
             for playlist in sp.current_user_playlists()['items']:
                 if playlist['name'] == self.name:
-                    hasPlaylist = True
-            if hasPlaylist == False:
+                    has_playlist = True
+            if has_playlist == False:
                 sp.user_playlist_create(name=self.name, public=False, user=listener.getID())
 
     def syncPlaylist(self):
         for listener in self.listeners:
+            print(type(listener))
             sp = spotipy.Spotify(auth=listener.getAccess())
             current_playlists = sp.current_user_playlists()['items']
             for playlist in current_playlists:
