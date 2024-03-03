@@ -37,6 +37,7 @@ def create_session(session_name, secret):
 
     conn = psycopg2.connect('postgres://spotify_listen_data_user:tKsP5Ic7JJOEvB9Xv6ePnLorFvNoD40G@dpg-cneg0qmct0pc738505dg-a.oregon-postgres.render.com/spotify_listen_data')
     cursor = conn.cursor()
+    #When adding listeners to this table, first serialize the listeners then add, deserialize when grabbing it from the table
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS sessions (
         id SERIAL PRIMARY KEY,
