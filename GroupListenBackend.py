@@ -50,7 +50,7 @@ def create_session(session_name, secret):
     rows = cursor.fetchall()
     for row in rows:
         if row[1] == secret_code:
-            group_session.addListener(row[2])
+            group_session.addListener(lc.Listener(row[2]))
 
     return redirect('/sessionLoop')
 
