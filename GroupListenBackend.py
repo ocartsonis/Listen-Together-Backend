@@ -88,29 +88,32 @@ def get_token():
         redirect(url_for('login', external = False))
     now = int(time.time())
     is_expired = token_info['expires_at'] - now < 60
+    print(secret_code)
     if(is_expired):
         spotify_oauth = create_spotify_oauth()
         token_info = spotify_oauth.refresh_access_token(token_info['refesh_token'])
-        conn = psycopg2.connect('postgres://spotify_listen_data_user:tKsP5Ic7JJOEvB9Xv6ePnLorFvNoD40G@dpg-cneg0qmct0pc738505dg-a.oregon-postgres.render.com/spotify_listen_data')
-        cursor = conn.cursor()
-        cursor.execute("""
+    conn = psycopg2.connect('postgres://spotify_listen_data_user:tKsP5Ic7JJOEvB9Xv6ePnLorFvNoD40G@dpg-cneg0qmct0pc738505dg-a.oregon-postgres.render.com/spotify_listen_data')
+    cursor = conn.cursor()
+    cursor.execute("""
         CREATE TABLE IF NOT EXISTS tokens (
             id SERIAL PRIMARY KEY,
             secret_code VARCHAR(100) UNIQUE NOT NULL,
             token JSONB NOT NULL
             )
-        """)
-        #check this tomorrow
-        print("CODE: ",secret_code)
-        if(secret_code != ''):
-            try:
-                cursor.execute("DELETE FROM tokens WHERE secret_code = %s", (secret_code,))
-            except Exception as e:
-                print("Exception: ", e)
-        cursor.execute("INSERT INTO tokens (secret_code, token) VALUES (%s, %s)", (secret_code, psycopg2.extras.Json(token_info)))
-        conn.commit()
-        cursor.close()
-        conn.close()
+    """)
+    #check this tomorrow
+    print("CODE: ",secret_code)
+    if(secret_code != ''):
+        try:
+            cursor.execute("DELETE FROM tokens WHERE secret_code = %s", (secret_code,))
+            cursor.execute("INSERT INTO tokens (secret_code, token) VALUES (%s, %s)", (secret_code, psycopg2.extras.Json(token_info)))
+            print("CODE: ", secret_code, "TOKEN: ", token_info)
+        except Exception as e:
+            print("Exception: ", e)
+        
+    conn.commit()
+    cursor.close()
+    conn.close()
     #print(token_info['access_token'])
     return token_info
 
