@@ -100,6 +100,8 @@ def get_token():
             token JSONB NOT NULL
             )
         """)
+        #check this tomorrow
+        print("CODE: ",secret_code)
         if(secret_code != ''):
             try:
                 cursor.execute("DELETE FROM tokens WHERE secret_code = %s", (secret_code,))
@@ -109,7 +111,7 @@ def get_token():
         conn.commit()
         cursor.close()
         conn.close()
-        
+    #print(token_info['access_token'])
     return token_info
 
 def create_spotify_oauth():
