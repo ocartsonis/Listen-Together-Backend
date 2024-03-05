@@ -20,6 +20,7 @@ class Session:
             has_playlist = False
             print(type(listener))
             sp = spotipy.Spotify(auth=listener.getAccess())
+            print(sp.current_user_playlists())
             for playlist in sp.current_user_playlists()['items']:
                 print(playlist['name'], self.name)
                 if playlist['name'] == self.name:
