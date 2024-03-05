@@ -18,6 +18,7 @@ class Session:
     def createPlaylist(self):
         for listener in self.listeners:
             sp = spotipy.Spotify(auth=listener.getAccess())
+            playlist_id = ""
             for playlist in sp.current_user_playlists()['items']:
                 if(playlist['name'] == self.name):
                     playlist_id = playlist['id']
