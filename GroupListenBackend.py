@@ -4,6 +4,7 @@ from spotipy.oauth2 import SpotifyOAuth
 from flask import Flask, request, url_for, session, redirect
 import psycopg2
 from psycopg2.extras import Json
+import threading
 import SessionClass as sc, ListenerClass as lc
 
 app = Flask(__name__)
@@ -51,16 +52,12 @@ def create_session(session_name, secret):
     for row in rows:
         if row[1] == secret_code:
             group_session.addListener(lc.Listener(row[2]))
-
-    return redirect('/sessionLoop')
-
-@app.route('/sessionLoop')
-def run_session():
-    global group_session
     group_session.createPlaylist()
-    group_session.syncPlaylist()
+    loop_thread = threading.Thread(target=run_session)
+    loop_thread.daemon = True
+    loop_thread.start()
 
-    return redirect('/sessionLoop')
+    return("Session Started")
 
 @app.route('/redirect')
 def redirect_page():
@@ -123,5 +120,11 @@ def create_spotify_oauth():
                         redirect_uri = url_for('redirect_page', _external = True),
                         scope = 'playlist-modify-private playlist-modify-public user-modify-playback-state user-read-playback-state user-read-currently-playing')
 
+def run_session():
+    global group_session
+    group_session.syncPlaylist()
+    return redirect('/sessionLoop')
+
 if __name__ == '__main__':
-    app.run()
+
+    app.run(debug=True)
