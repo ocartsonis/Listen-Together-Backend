@@ -118,7 +118,7 @@ def create_spotify_oauth():
     return SpotifyOAuth(client_id = '66a01aec42f147a888ddb675a5f71a4e',
                         client_secret = '6c9ce3e8fcca4050921b4b69937586f6',
                         redirect_uri = url_for('redirect_page', _external = True),
-                        scope = 'playlist-modify-private playlist-modify-public user-modify-playback-state user-read-playback-state user-read-currently-playing')
+                        scope = 'playlist-modify-private playlist-modify-public user-modify-playback-state user-read-playback-state user-read-currently-playing playlist-read-private playlist-read-collaborative')
 
 def run_session():
     global group_session
