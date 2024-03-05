@@ -17,7 +17,6 @@ group_session: sc.Session
 
 @app.route('/')
 def login():
-    print(secret_code)
     auth_url = create_spotify_oauth().get_authorize_url()
     return redirect(auth_url)
 
@@ -59,6 +58,10 @@ def create_session(session_name, secret):
 
     return("Session Started")
 
+@app.route('/joinSession/<session_name>')
+def join_session(session_name):
+    #add session stuff to join (postgresql)
+
 @app.route('/redirect')
 def redirect_page():
     session.clear()
@@ -85,7 +88,6 @@ def get_token():
         redirect(url_for('login', external = False))
     now = int(time.time())
     is_expired = token_info['expires_at'] - now < 60
-    print(secret_code)
     if(is_expired):
         spotify_oauth = create_spotify_oauth()
         token_info = spotify_oauth.refresh_access_token(token_info['refesh_token'])
@@ -99,19 +101,17 @@ def get_token():
             )
     """)
     #check this tomorrow
-    print("CODE: ",secret_code)
     if(secret_code != ''):
         try:
             cursor.execute("DELETE FROM tokens WHERE secret_code = %s", (secret_code,))
             cursor.execute("INSERT INTO tokens (secret_code, token) VALUES (%s, %s)", (secret_code, psycopg2.extras.Json(token_info)))
-            print("CODE: ", secret_code, "TOKEN: ", token_info)
         except Exception as e:
             print("Exception: ", e)
         
     conn.commit()
     cursor.close()
     conn.close()
-    #print(token_info['access_token'])
+
     return token_info
 
 def create_spotify_oauth():

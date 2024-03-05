@@ -28,7 +28,6 @@ class Session:
 
     def syncPlaylist(self):
         for listener in self.listeners:
-            print(type(listener))
             sp = spotipy.Spotify(auth=listener.getAccess())
             current_playlists = sp.current_user_playlists()['items']
             for playlist in current_playlists:
