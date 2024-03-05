@@ -34,7 +34,7 @@ class Session:
             for playlist in current_playlists:
                 if playlist['name'] == self.name:
                     #make this a list that is added to or subtracted from
-                    listener_tracks = sp.playlist_items(playlist_id=playlist['id'])
+                    listener_tracks = sp.playlist_items(playlist_id=playlist['id'])['items']
                     listener_track_uris = []
                     for listener_track in listener_tracks:
                         listener_track_uris.append(listener_track['track']['uri'])
