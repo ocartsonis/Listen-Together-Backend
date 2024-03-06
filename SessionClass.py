@@ -56,4 +56,7 @@ class Session:
 
     def getListeners(self):
         return self.listeners
+    
+    def getName(self):
+        return self.name
         

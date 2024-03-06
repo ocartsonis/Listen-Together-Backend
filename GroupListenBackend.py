@@ -6,6 +6,7 @@ import psycopg2
 from psycopg2.extras import Json
 import threading
 import SessionClass as sc, ListenerClass as lc
+import json
 
 app = Flask(__name__)
 
@@ -51,6 +52,16 @@ def create_session(session_name, secret):
     for row in rows:
         if row[1] == secret_code:
             group_session.addListener(lc.Listener(row[2]))
+
+    try:
+        cursor.execute("INSERT INTO sessions (name, session) VALUES (%s, %s)", (session_name, serialize_instance(session)))
+    except Exception as e:
+        print("Exception: ", e)
+    
+    conn.commit()
+    cursor.close()
+    conn.close()
+
     group_session.createPlaylist()
     loop_thread = threading.Thread(target=run_session)
     loop_thread.daemon = True
@@ -58,9 +69,37 @@ def create_session(session_name, secret):
 
     return("Session Started")
 
-@app.route('/joinSession/<session_name>')
-def join_session(session_name):
+@app.route('/joinSession/<session_name>/<secret>')
+def join_session(session_name, secret):
     #add session stuff to join (postgresql)
+    global secret_code
+    secret_code = secret
+
+    conn = psycopg2.connect('postgres://spotify_listen_data_user:tKsP5Ic7JJOEvB9Xv6ePnLorFvNoD40G@dpg-cneg0qmct0pc738505dg-a.oregon-postgres.render.com/spotify_listen_data')
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM sessions")
+    rows = cursor.fetchall()
+
+    for row in rows:
+        if row[1] == session_name:
+            session = deserialize_instance(row[2])
+    
+    cursor.execute("SELECT * FROM tokens")
+    rows = cursor.fetchall()
+
+    for row in rows:
+        if row[1] == secret_code:
+            group_session.addListener(lc.Listener(row[2]))
+
+    session.createPlaylist()
+
+    try:
+        cursor.execute("INSERT INTO sessions (name, session) VALUES (%s, %s)", (session_name, serialize_instance(session)))
+    except Exception as e:
+        print("Exception: ", e)
+
+    return("Session Joined")
 
 @app.route('/redirect')
 def redirect_page():
@@ -122,8 +161,26 @@ def create_spotify_oauth():
 
 def run_session():
     global group_session
+
+    conn = psycopg2.connect('postgres://spotify_listen_data_user:tKsP5Ic7JJOEvB9Xv6ePnLorFvNoD40G@dpg-cneg0qmct0pc738505dg-a.oregon-postgres.render.com/spotify_listen_data')
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM sessions")
+    rows = cursor.fetchall()
+
+    for row in rows:
+        if row[1] == group_session.getName():
+            group_session = deserialize_instance(row[2])
+
     group_session.syncPlaylist()
     return redirect('/sessionLoop')
+
+def serialize_instance(obj):
+    return json.dumps(obj.__dict__)
+
+def deserialize_instance(json_str):
+    data = json.loads(json_str)
+    return sc.Session(**data)
 
 if __name__ == '__main__':
 
