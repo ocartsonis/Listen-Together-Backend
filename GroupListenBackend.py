@@ -73,6 +73,7 @@ def create_session(session_name, secret):
 def join_session(session_name, secret):
     #add session stuff to join (postgresql)
     global secret_code
+    global group_session
     secret_code = secret
 
     conn = psycopg2.connect('postgres://spotify_listen_data_user:tKsP5Ic7JJOEvB9Xv6ePnLorFvNoD40G@dpg-cneg0qmct0pc738505dg-a.oregon-postgres.render.com/spotify_listen_data')
@@ -81,9 +82,10 @@ def join_session(session_name, secret):
     cursor.execute("SELECT * FROM sessions")
     rows = cursor.fetchall()
 
+
     for row in rows:
         if row[1] == session_name:
-            session = deserialize_instance(row[2])
+            group_session = deserialize_instance(row[2])
     
     cursor.execute("SELECT * FROM tokens")
     rows = cursor.fetchall()
@@ -92,10 +94,10 @@ def join_session(session_name, secret):
         if row[1] == secret_code:
             group_session.addListener(lc.Listener(row[2]))
 
-    session.createPlaylist()
+    group_session.createPlaylist()
 
     try:
-        cursor.execute("INSERT INTO sessions (name, session) VALUES (%s, %s)", (session_name, serialize_instance(session)))
+        cursor.execute("INSERT INTO sessions (name, session) VALUES (%s, %s)", (session_name, serialize_instance(group_session)))
     except Exception as e:
         print("Exception: ", e)
 
