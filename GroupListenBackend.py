@@ -53,6 +53,7 @@ def create_session(session_name, secret):
         if row[1] == secret_code:
             group_session.addListener(lc.Listener(row[2]))
 
+
     try:
         cursor.execute("INSERT INTO sessions (name, session) VALUES (%s, %s)", (session_name, serialize_instance(session)))
     except Exception as e:
