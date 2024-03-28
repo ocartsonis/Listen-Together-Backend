@@ -108,8 +108,28 @@ def join_session(session_name, secret):
 def redirect_page():
     session.clear()
     code = request.args.get('code')
-    token_info = create_spotify_oauth().get_access_token(code)
-    session[TOKEN_INFO] = token_info
+    token_info = create_spotify_oauth().get_access_token(code=code, check_cache=False)
+    
+    conn = psycopg2.connect('postgres://spotify_listen_data_user:tKsP5Ic7JJOEvB9Xv6ePnLorFvNoD40G@dpg-cneg0qmct0pc738505dg-a.oregon-postgres.render.com/spotify_listen_data')
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS tokens (
+            id SERIAL PRIMARY KEY,
+            secret_code VARCHAR(100) UNIQUE NOT NULL,
+            token JSONB NOT NULL
+            )
+    """)
+    #check this tomorrow
+    if(secret_code != ''):
+        try:
+            cursor.execute("DELETE FROM tokens WHERE secret_code = %s", (secret_code,))
+        except Exception as e:
+            print("Exception: ", e)
+    cursor.execute("INSERT INTO tokens (secret_code, token) VALUES (%s, %s)", (secret_code, psycopg2.extras.Json(token_info)))
+    conn.commit()
+    cursor.close()
+    conn.close()
+
     return redirect(url_for('listen_together', external = True))
 
 @app.route('/listenTogether')
@@ -125,14 +145,6 @@ def listen_together():
     return(listener_test.getName())
 
 def get_token():
-    token_info = session.get(TOKEN_INFO, None)
-    if not token_info:
-        redirect(url_for('login', external = False))
-    now = int(time.time())
-    is_expired = token_info['expires_at'] - now < 60
-    if(is_expired):
-        spotify_oauth = create_spotify_oauth()
-        token_info = spotify_oauth.refresh_access_token(token_info['refesh_token'])
     conn = psycopg2.connect('postgres://spotify_listen_data_user:tKsP5Ic7JJOEvB9Xv6ePnLorFvNoD40G@dpg-cneg0qmct0pc738505dg-a.oregon-postgres.render.com/spotify_listen_data')
     cursor = conn.cursor()
     cursor.execute("""
@@ -142,17 +154,30 @@ def get_token():
             token JSONB NOT NULL
             )
     """)
+    token_info = ""
     #check this tomorrow
     if(secret_code != ''):
         try:
-            cursor.execute("DELETE FROM tokens WHERE secret_code = %s", (secret_code,))
-            cursor.execute("INSERT INTO tokens (secret_code, token) VALUES (%s, %s)", (secret_code, psycopg2.extras.Json(token_info)))
+            cursor.execute("SELECT * FROM tokens")
+            rows = cursor.fetchall()
+
+            for row in rows:
+                if row[1] == secret_code:
+                    token_info = row[2]
         except Exception as e:
             print("Exception: ", e)
         
     conn.commit()
     cursor.close()
     conn.close()
+    print(token_info)
+    if not token_info:
+        redirect(url_for('login', external = False))
+    now = int(time.time())
+    is_expired = token_info['expires_at'] - now < 60
+    if(is_expired):
+        spotify_oauth = create_spotify_oauth()
+        token_info = spotify_oauth.refresh_access_token(token_info['refesh_token'])
 
     return token_info
 
