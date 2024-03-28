@@ -52,13 +52,15 @@ def create_session(session_name, secret):
     for row in rows:
         if row[1] == secret_code:
             group_session.addListener(lc.Listener(row[2]))
+            print("added user")
 
 
     try:
         cursor.execute("INSERT INTO sessions (name, session) VALUES (%s, %s)", (session_name, serialize_instance(session)))
+        print("added session to database")
     except Exception as e:
         print("Exception: ", e)
-    
+    print("session hosted without errors")
     conn.commit()
     cursor.close()
     conn.close()
@@ -170,7 +172,6 @@ def get_token():
     conn.commit()
     cursor.close()
     conn.close()
-    print(token_info)
     if not token_info:
         redirect(url_for('login', external = False))
     now = int(time.time())
