@@ -51,12 +51,10 @@ def create_session(session_name, secret):
     rows = cursor.fetchall()
     for row in rows:
         if row[1] == secret_code:
-            group_session.addListener(lc.Listener(row[2]))
-            print("added user")
-
-
+            group_session.addListener(lc.Listener(json.loads(row[2])))
+            print("added host")
     try:
-        cursor.execute("INSERT INTO sessions (name, session) VALUES (%s, %s)", (session_name, serialize_instance(session)))
+        cursor.execute("INSERT INTO sessions (name, session) VALUES (%s, %s)", (session_name, json.dumps(group_session.getDict())))
         print("added session to database")
     except Exception as e:
         print("Exception: ", e)
@@ -72,6 +70,7 @@ def create_session(session_name, secret):
 
     return("Session Started")
 
+#needs rework after host session rework
 @app.route('/joinSession/<session_name>/<secret>')
 def join_session(session_name, secret):
     #add session stuff to join (postgresql)
@@ -88,7 +87,7 @@ def join_session(session_name, secret):
 
     for row in rows:
         if row[1] == session_name:
-            group_session = deserialize_instance(row[2])
+            group_session = sc.Session(json.loads(row[2]))
     
     cursor.execute("SELECT * FROM tokens")
     rows = cursor.fetchall()
@@ -98,9 +97,9 @@ def join_session(session_name, secret):
             group_session.addListener(lc.Listener(row[2]))
 
     group_session.createPlaylist()
-
+    #im reading this and it makes no sense why this would be here, come back later when working on the join session functionality
     try:
-        cursor.execute("INSERT INTO sessions (name, session) VALUES (%s, %s)", (session_name, serialize_instance(group_session)))
+        cursor.execute("INSERT INTO sessions (name, session) VALUES (%s, %s)", (session_name, json.dumps(group_session.getDict())))
     except Exception as e:
         print("Exception: ", e)
 
@@ -127,7 +126,7 @@ def redirect_page():
             cursor.execute("DELETE FROM tokens WHERE secret_code = %s", (secret_code,))
         except Exception as e:
             print("Exception: ", e)
-    cursor.execute("INSERT INTO tokens (secret_code, token) VALUES (%s, %s)", (secret_code, psycopg2.extras.Json(token_info)))
+    cursor.execute("INSERT INTO tokens (secret_code, token) VALUES (%s, %s)", (secret_code, json.dumps(token_info)))
     conn.commit()
     cursor.close()
     conn.close()
@@ -165,7 +164,7 @@ def get_token():
 
             for row in rows:
                 if row[1] == secret_code:
-                    token_info = row[2]
+                    token_info = json.loads(row[2])
         except Exception as e:
             print("Exception: ", e)
         
@@ -199,17 +198,9 @@ def run_session():
 
     for row in rows:
         if row[1] == group_session.getName():
-            group_session = deserialize_instance(row[2])
+            group_session = sc.Session(session_dict=json.loads(row[2]))
 
     group_session.syncPlaylist()
-    return redirect('/sessionLoop')
-
-def serialize_instance(obj):
-    return json.dumps(obj.__dict__)
-
-def deserialize_instance(json_str):
-    data = json.loads(json_str)
-    return sc.Session(**data)
 
 if __name__ == '__main__':
 

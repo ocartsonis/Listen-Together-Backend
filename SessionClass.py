@@ -1,13 +1,23 @@
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import ListenerClass as lc
+import psycopg2
+from psycopg2.extras import Json
+import json
 
 class Session:
-    def __init__(self, name):
-        self.name = name
-        self.listeners = []
-        self.track_uris = []
-        self.total_track_differences = []
+    def __init__(self, name = '', session_dict={}):
+        if session_dict=={}:
+            self.name = name
+            self.listeners = []
+            self.track_uris = []
+            self.total_track_differences = []
+        else:
+            self.name = session_dict['name']
+            for listener_token in session_dict['listener_tokens']:
+                self.listeners.append(lc.Listener(json.loads(listener_token)))
+            self.track_uris = session_dict['track_uris']
+            self.total_track_differences = session_dict['track_differences']
 
     def addListener(self, listener: lc.Listener):
         self.listeners.append(listener)
@@ -59,4 +69,11 @@ class Session:
     
     def getName(self):
         return self.name
+    
+    def getDict(self):
+        listener_tokens = []
+        for listener in self.listeners:
+            listener_tokens.append(json.dumps(listener.getToken()))
+        session_dict = {'name': self.name, 'listener_tokens': listener_tokens, 'track_uris': self.track_uris, 'track_differences': self.total_track_differences}
+        return session_dict
         
