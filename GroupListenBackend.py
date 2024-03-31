@@ -202,6 +202,17 @@ def run_session():
             group_session = sc.Session(session_dict=row[2])
 
     group_session.syncPlaylist()
+    try:
+        cursor.execute("DELETE FROM sessions WHERE name = %s", (group_session.getName(),))
+    except Exception as e:
+        print("Exception: ", e)
+    try:
+        cursor.execute("INSERT INTO sessions (name, session) VALUES (%s, %s)", (group_session.getName(), psycopg2.extras.Json(group_session.getDict())))
+    except Exception as e:
+        print("Exception: ", e)
+    conn.commit()
+    cursor.close()
+    conn.close()
 
 if __name__ == '__main__':
 
