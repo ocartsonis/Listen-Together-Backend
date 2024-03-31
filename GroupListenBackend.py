@@ -84,7 +84,6 @@ def join_session(session_name, secret):
     cursor.execute("SELECT * FROM sessions")
     rows = cursor.fetchall()
 
-
     for row in rows:
         if row[1] == session_name:
             group_session = sc.Session(row[2])
@@ -99,10 +98,14 @@ def join_session(session_name, secret):
     group_session.createPlaylist()
     #im reading this and it makes no sense why this would be here, come back later when working on the join session functionality
     try:
-        cursor.execute("INSERT INTO sessions (name, session) VALUES (%s, %s)", (session_name, psycopg2.extras.Json(group_session.getDict())))
+        cursor.execute("DELETE FROM sessions WHERE name = %s", (session_name,))
     except Exception as e:
         print("Exception: ", e)
 
+    cursor.execute("INSERT INTO sessions (name, session) VALUES (%s, %s)", (session_name, psycopg2.extras.Json(group_session.getDict())))
+    conn.commit()
+    cursor.close()
+    conn.close()
     return("Session Joined")
 
 @app.route('/redirect')
@@ -206,10 +209,7 @@ def run_session():
         cursor.execute("DELETE FROM sessions WHERE name = %s", (group_session.getName(),))
     except Exception as e:
         print("Exception: ", e)
-    try:
-        cursor.execute("INSERT INTO sessions (name, session) VALUES (%s, %s)", (group_session.getName(), psycopg2.extras.Json(group_session.getDict())))
-    except Exception as e:
-        print("Exception: ", e)
+    cursor.execute("INSERT INTO sessions (name, session) VALUES (%s, %s)", (group_session.getName(), psycopg2.extras.Json(group_session.getDict())))
     conn.commit()
     cursor.close()
     conn.close()
