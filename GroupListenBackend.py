@@ -199,7 +199,7 @@ def run_session():
 
     cursor.execute("SELECT * FROM sessions")
     rows = cursor.fetchall()
-
+    print("hello")
     for row in rows:
         if row[1] == group_session.getName():
             group_session = sc.Session(session_dict=row[2])
