@@ -27,6 +27,7 @@ class Session:
         self.listeners.remove(listener)
 
     def createPlaylist(self):
+        print("working 3")
         for listener in self.listeners:
             sp = spotipy.Spotify(auth=listener.getAccess())
             playlist_id = ""
@@ -34,6 +35,7 @@ class Session:
                 if(playlist['name'] == self.name):
                     playlist_id = playlist['id']
             if not playlist_id:
+                print("DEBUG: ", listener.getID(), self.name)
                 new_playlist = sp.user_playlist_create(user=listener.getID(), name=self.name, public=True)
                 playlist_id = new_playlist['id']
 

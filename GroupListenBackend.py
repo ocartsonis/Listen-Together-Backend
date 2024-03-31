@@ -94,9 +94,9 @@ def join_session(session_name, secret):
     for row in rows:
         if row[1] == secret_code:
             group_session.addListener(lc.Listener(row[2]))
-
+    print("working 1")
     group_session.createPlaylist()
-    #im reading this and it makes no sense why this would be here, come back later when working on the join session functionality
+    print("working 2")
     try:
         cursor.execute("DELETE FROM sessions WHERE name = %s", (session_name,))
     except Exception as e:
