@@ -14,6 +14,7 @@ class Session:
             self.total_track_differences = []
         else:
             self.name = session_dict['name']
+            self.listeners = []
             for listener_token in session_dict['listener_tokens']:
                 self.listeners.append(lc.Listener(listener_token))
             self.track_uris = session_dict['track_uris']
