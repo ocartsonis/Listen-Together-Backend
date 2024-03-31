@@ -195,7 +195,6 @@ def run_session():
     #global group_session
     while True:
         print("is this working?")
-        time.sleep(1)
     # conn = psycopg2.connect('postgres://spotify_listen_data_user:tKsP5Ic7JJOEvB9Xv6ePnLorFvNoD40G@dpg-cneg0qmct0pc738505dg-a.oregon-postgres.render.com/spotify_listen_data')
     # print("wow")
     # cursor = conn.cursor()
@@ -216,6 +215,7 @@ def run_session():
     # conn.commit()
     # cursor.close()
     # conn.close()
+    return False
 
 if __name__ == '__main__':
 
