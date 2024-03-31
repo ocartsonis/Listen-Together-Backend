@@ -86,7 +86,7 @@ def join_session(session_name, secret):
 
     for row in rows:
         if row[1] == session_name:
-            group_session = sc.Session(row[2])
+            group_session = sc.Session(session_dict=row[2])
     
     cursor.execute("SELECT * FROM tokens")
     rows = cursor.fetchall()
