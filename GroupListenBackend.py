@@ -142,7 +142,8 @@ def listen_together():
         return redirect('/')
 
     listener_test = lc.Listener(token)
-
+    print(token, type(token))
+    print(listener_test.getName())
     return(listener_test.getName())
 
 def get_token():
