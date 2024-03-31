@@ -65,7 +65,7 @@ def create_session(session_name, secret):
 
     group_session.createPlaylist()
     loop_thread = threading.Thread(target=run_session)
-    loop_thread.daemon = True
+    #loop_thread.daemon = True
     loop_thread.start()
 
     return("Session Started")
