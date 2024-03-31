@@ -73,7 +73,7 @@ class Session:
     def getDict(self):
         listener_tokens = []
         for listener in self.listeners:
-            listener_tokens.append(json.dumps(listener.getToken()))
+            listener_tokens.append(listener.getToken())
         session_dict = {'name': self.name, 'listener_tokens': listener_tokens, 'track_uris': self.track_uris, 'track_differences': self.total_track_differences}
         return session_dict
         

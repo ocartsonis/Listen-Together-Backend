@@ -126,7 +126,7 @@ def redirect_page():
             cursor.execute("DELETE FROM tokens WHERE secret_code = %s", (secret_code,))
         except Exception as e:
             print("Exception: ", e)
-    cursor.execute("INSERT INTO tokens (secret_code, token) VALUES (%s, %s)", (secret_code, json.dumps(token_info)))
+    cursor.execute("INSERT INTO tokens (secret_code, token) VALUES (%s, %s)", (secret_code, psycopg2.extras.Json(token_info)))
     conn.commit()
     cursor.close()
     conn.close()
@@ -165,7 +165,7 @@ def get_token():
 
             for row in rows:
                 if row[1] == secret_code:
-                    token_info = json.loads(row[2])
+                    token_info = row[2]
         except Exception as e:
             print("Exception: ", e)
         
