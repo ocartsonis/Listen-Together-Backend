@@ -195,8 +195,9 @@ def run_session():
     global group_session
     print("is this working?")
     conn = psycopg2.connect('postgres://spotify_listen_data_user:tKsP5Ic7JJOEvB9Xv6ePnLorFvNoD40G@dpg-cneg0qmct0pc738505dg-a.oregon-postgres.render.com/spotify_listen_data')
+    print("wow")
     cursor = conn.cursor()
-
+    print("huh")
     cursor.execute("SELECT * FROM sessions")
     rows = cursor.fetchall()
     print("hello")
