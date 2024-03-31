@@ -194,26 +194,27 @@ def create_spotify_oauth():
 def run_session():
     global group_session
     print("is this working?")
-    conn = psycopg2.connect('postgres://spotify_listen_data_user:tKsP5Ic7JJOEvB9Xv6ePnLorFvNoD40G@dpg-cneg0qmct0pc738505dg-a.oregon-postgres.render.com/spotify_listen_data')
-    print("wow")
-    cursor = conn.cursor()
-    print("huh")
-    cursor.execute("SELECT * FROM sessions")
-    rows = cursor.fetchall()
-    print("hello")
-    for row in rows:
-        if row[1] == group_session.getName():
-            group_session = sc.Session(session_dict=row[2])
+    # conn = psycopg2.connect('postgres://spotify_listen_data_user:tKsP5Ic7JJOEvB9Xv6ePnLorFvNoD40G@dpg-cneg0qmct0pc738505dg-a.oregon-postgres.render.com/spotify_listen_data')
+    # print("wow")
+    # cursor = conn.cursor()
+    # print("huh")
+    # cursor.execute("SELECT * FROM sessions")
+    # rows = cursor.fetchall()
+    # print("hello")
+    # for row in rows:
+    #     if row[1] == group_session.getName():
+    #         group_session = sc.Session(session_dict=row[2])
 
-    group_session.syncPlaylist()
-    try:
-        cursor.execute("DELETE FROM sessions WHERE name = %s", (group_session.getName(),))
-    except Exception as e:
-        print("Exception: ", e)
-    cursor.execute("INSERT INTO sessions (name, session) VALUES (%s, %s)", (group_session.getName(), psycopg2.extras.Json(group_session.getDict())))
-    conn.commit()
-    cursor.close()
-    conn.close()
+    # group_session.syncPlaylist()
+    # try:
+    #     cursor.execute("DELETE FROM sessions WHERE name = %s", (group_session.getName(),))
+    # except Exception as e:
+    #     print("Exception: ", e)
+    # cursor.execute("INSERT INTO sessions (name, session) VALUES (%s, %s)", (group_session.getName(), psycopg2.extras.Json(group_session.getDict())))
+    # conn.commit()
+    # cursor.close()
+    # conn.close()
+    return ("cheese")
 
 if __name__ == '__main__':
 
