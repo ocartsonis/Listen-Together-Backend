@@ -156,7 +156,7 @@ def get_token():
             token JSONB NOT NULL
             )
     """)
-    token_info = ""
+    token_info = {}
     #check this tomorrow
     if(secret_code != ''):
         try:
