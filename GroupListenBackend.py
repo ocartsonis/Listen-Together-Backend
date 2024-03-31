@@ -192,7 +192,7 @@ def create_spotify_oauth():
                         scope = 'playlist-modify-private playlist-modify-public user-modify-playback-state user-read-playback-state user-read-currently-playing playlist-read-private playlist-read-collaborative')
 
 def run_session():
-    global group_session
+    #global group_session
     print("is this working?")
     # conn = psycopg2.connect('postgres://spotify_listen_data_user:tKsP5Ic7JJOEvB9Xv6ePnLorFvNoD40G@dpg-cneg0qmct0pc738505dg-a.oregon-postgres.render.com/spotify_listen_data')
     # print("wow")
@@ -214,7 +214,6 @@ def run_session():
     # conn.commit()
     # cursor.close()
     # conn.close()
-    return ("cheese")
 
 if __name__ == '__main__':
 
