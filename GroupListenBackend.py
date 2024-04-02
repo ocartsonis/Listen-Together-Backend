@@ -196,7 +196,7 @@ def run_session():
     init_time = time.time()
     while True:
         if((time.time() - init_time) > 1):
-            print("is this working?")
+            print("is this working?  ", time.time())
             # conn = psycopg2.connect('postgres://spotify_listen_data_user:tKsP5Ic7JJOEvB9Xv6ePnLorFvNoD40G@dpg-cneg0qmct0pc738505dg-a.oregon-postgres.render.com/spotify_listen_data')
             # cursor = conn.cursor()
             # cursor.execute("SELECT * FROM sessions")
