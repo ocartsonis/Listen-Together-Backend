@@ -195,7 +195,10 @@ def run_session():
     #global group_session
     session = group_session
     init_time = time.time()
+    last_time = time.time()
     while True:
+        print("time since last epoch: ", time.time() - last_time)
+        last_time = time.time()
         if((time.time() - init_time) > 5):
             print("begining time: ", time.time())
             print("beginning sync", time.time() - init_time)
