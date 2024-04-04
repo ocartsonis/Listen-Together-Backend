@@ -197,21 +197,26 @@ def run_session():
     init_time = time.time()
     while True:
         if((time.time() - init_time) > 1):
-            print("is this working?  ", time.time())
+            print("beginning sync", time.time() - init_time)
             conn = psycopg2.connect('postgres://spotify_listen_data_user:tKsP5Ic7JJOEvB9Xv6ePnLorFvNoD40G@dpg-cneg0qmct0pc738505dg-a.oregon-postgres.render.com/spotify_listen_data')
+            print("connected to database", time.time() - init_time)
             cursor = conn.cursor()
             cursor.execute("SELECT * FROM sessions")
             rows = cursor.fetchall()
+            print("fetched sessions", time.time() - init_time)
             for row in rows:
                 if row[1] == session.getName():
                     session = sc.Session(session_dict=row[2])
-
+            print("attempting to sync playlists", time.time() - init_time)
             session.syncPlaylist()
+            print("synced playlists", time.time() - init_time)
+            
             try:
                 cursor.execute("DELETE FROM sessions WHERE name = %s", (session.getName(),))
             except Exception as e:
                 print("Exception: ", e)
             cursor.execute("INSERT INTO sessions (name, session) VALUES (%s, %s)", (session.getName(), psycopg2.extras.Json(session.getDict())))
+            print("reuploaded session to database", time.time() - init_time)
             conn.commit()
             cursor.close()
             conn.close()
