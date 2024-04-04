@@ -197,6 +197,7 @@ def run_session():
     init_time = time.time()
     while True:
         if((time.time() - init_time) > 5):
+            print("begining time: ", time.time())
             print("beginning sync", time.time() - init_time)
             conn = psycopg2.connect('postgres://spotify_listen_data_user:tKsP5Ic7JJOEvB9Xv6ePnLorFvNoD40G@dpg-cneg0qmct0pc738505dg-a.oregon-postgres.render.com/spotify_listen_data')
             print("connected to database", time.time() - init_time)
@@ -221,6 +222,7 @@ def run_session():
             cursor.close()
             conn.close()
             init_time = time.time()
+            print("end time: ", time.time())
         
 
 
