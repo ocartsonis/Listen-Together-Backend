@@ -40,7 +40,9 @@ class Session:
     def syncPlaylist(self):
         for listener in self.listeners:
             sp = spotipy.Spotify(auth=listener.getAccess())
+            print("getting playlists")
             current_playlists = sp.current_user_playlists()['items']
+            print("playlists obtained")
             for playlist in current_playlists:
                 if playlist['name'] == self.name:
                     #make this a list that is added to or subtracted from
