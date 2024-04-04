@@ -192,7 +192,8 @@ def create_spotify_oauth():
                         scope = 'playlist-modify-private playlist-modify-public user-modify-playback-state user-read-playback-state user-read-currently-playing playlist-read-private playlist-read-collaborative')
 
 def run_session():
-    global group_session
+    #global group_session
+    session = group_session
     init_time = time.time()
     while True:
         if((time.time() - init_time) > 1):
@@ -202,15 +203,15 @@ def run_session():
             cursor.execute("SELECT * FROM sessions")
             rows = cursor.fetchall()
             for row in rows:
-                if row[1] == group_session.getName():
-                    group_session = sc.Session(session_dict=row[2])
+                if row[1] == session.getName():
+                    session = sc.Session(session_dict=row[2])
 
-            group_session.syncPlaylist()
+            session.syncPlaylist()
             try:
-                cursor.execute("DELETE FROM sessions WHERE name = %s", (group_session.getName(),))
+                cursor.execute("DELETE FROM sessions WHERE name = %s", (session.getName(),))
             except Exception as e:
                 print("Exception: ", e)
-            cursor.execute("INSERT INTO sessions (name, session) VALUES (%s, %s)", (group_session.getName(), psycopg2.extras.Json(group_session.getDict())))
+            cursor.execute("INSERT INTO sessions (name, session) VALUES (%s, %s)", (session.getName(), psycopg2.extras.Json(session.getDict())))
             conn.commit()
             cursor.close()
             conn.close()
