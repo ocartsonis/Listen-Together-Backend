@@ -114,7 +114,7 @@ def redirect_page():
     code = request.args.get('code')
     token_info = create_spotify_oauth().get_access_token(code=code, check_cache=False)
     print("info type: ", type(token_info))
-    conn = psycopg2.connect('postgres://spotify_listen_data_user:tKsP5Ic7JJOEvB9Xv6ePnLorFvNoD40G@dpg-cneg0qmct0pc738505dg-a.oregon-postgres.render.com/spotify_listen_data')
+    conn = psycopg2.connect('postgresql://ocart:hbOvtzoIHLeCo1DnF5FaIvyRHgdQOqnC@dpg-d040di1r0fns73cmn6a0-a/listen_data')
     cursor = conn.cursor()
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS tokens (
